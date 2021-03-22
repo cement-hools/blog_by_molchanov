@@ -1,8 +1,10 @@
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import View
 
+from blog.forms import TagForm, PostForm
 from blog.models import Post, Tag
+from blog.utils import ObjectDetailMixin, ObjectCreateMixin
 
 
 def posts_list(request):
@@ -13,31 +15,25 @@ def posts_list(request):
     return render(request, 'blog/index.html', context)
 
 
-# def post_detail(request, slug):
-#     # post = get_object_or_404(Post, slug=slug)
-#     post = Post.objects.get(slug__iexact=slug)
-#     context = {
-#         'post': post,
-#     }
-#     return render(request, 'blog/post_detail.html', context)
+class PostDetail(ObjectDetailMixin, View):
+    model = Post
+    template = 'blog/post_detail.html'
 
 
-class PostDetail(View):
-    def get(self, request, slug):
-        post = Post.objects.get(slug__iexact=slug)
-        context = {
-            'post': post,
-        }
-        return render(request, 'blog/post_detail.html', context)
+class PostCreate(ObjectCreateMixin, View):
+    model_form = PostForm
+    template = 'blog/post_create_form.html'
 
 
-class TagDetail(View):
-    def get(self, request, slug):
-        tag = Tag.objects.get(slug__iexact=slug)
-        context = {
-            'tag': tag,
-        }
-        return render(request, 'blog/tag_detail.html', context)
+class TagDetail(ObjectDetailMixin, View):
+    model = Tag
+    template = 'blog/tag_detail.html'
+
+
+class TagCreate(ObjectCreateMixin, View):
+    model_form = TagForm
+    template = 'blog/tag_create_form.html'
+
 
 def tags_list(request):
     tags = Tag.objects.all()
@@ -45,13 +41,3 @@ def tags_list(request):
         'tags': tags,
     }
     return render(request, 'blog/tags_list.html', context)
-
-
-# def tag_detail(request, slug):
-#     # tag = get_object_or_404(Tag, slug=slug)
-#     tag = Tag.objects.get(slug__iexact=slug)
-#     print(tag)
-#     context = {
-#         'tag': tag,
-#     }
-#     return render(request, 'blog/tag_detail.html', context)
