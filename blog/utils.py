@@ -12,6 +12,8 @@ class ObjectDetailMixin:
         obj_name_in_context = self.model.__name__.lower()
         context = {
             obj_name_in_context: obj,
+            'admin_object': obj,
+            'detail': True,
         }
         return render(request, self.template, context)
 
